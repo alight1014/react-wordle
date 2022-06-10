@@ -8,13 +8,19 @@ const Wordle = () => {
         YELLOW: 'yellow',
         GRAY: 'gray',
     };
+    const LIMIT_COUNT = 5;
+
 
     const [currentGuess, setCurrentGuess] = useState([]);
-    const [isWinner, setIsWinner] = useState(false);
+    const [isEndGame, setIsEndGame] = useState(false);
     const [history, setHistory] = useState([]);
+    const [guessCount, setGuessCount] = useState(0);
 
     const handleUserKeyUp = (event) => {
         const { key } = event;
+
+        // 遊戲結束，不在做任何判斷
+        if(isEndGame) return;
 
         //限制只能猜英文字且不能超過猜的單字字數上限
         if(/^[A-Za-z]$/.test(key) && currentGuess.length < answer.length) {
@@ -24,13 +30,15 @@ const Wordle = () => {
             }]);
         }
 
-        // 刪除猜測的字母
+        // 刪除猜測的字母資料
         if(key === 'Backspace' && currentGuess.length !== 0) {
             setCurrentGuess([...currentGuess].slice(0,-1));
         }
 
         // 猜測確認
         if(key === 'Enter' && currentGuess.length === answer.length) {
+
+            const currentGuessCount = guessCount+1;
 
             // 判斷幾 A 幾 B
             const roundGuess = currentGuess.map((obj, index) => {
@@ -45,30 +53,32 @@ const Wordle = () => {
                 return obj;
             });
 
-            // 判斷輸贏
+            // 有非綠的答案
             if(roundGuess.find((obj) => (obj.color === COLOR.GRAY || obj.color === COLOR.YELLOW))) {
-                setIsWinner(false);
-                setCurrentGuess([]);
-            } else {
-                setIsWinner(true);
+                // 達到猜題上限
+                if(currentGuessCount >= LIMIT_COUNT) {
+                    setIsEndGame(true);
+                } else {
+                    // 未達到，清除目前猜除資訊，繼續猜
+                    setCurrentGuess([]);
+                }
+            } else { // 全綠
+               setIsEndGame(true);
             }
+
+            setGuessCount(currentGuessCount);
 
             // 寫紀錄
             setHistory([...history, {
                 guessAnswer: roundGuess,
             }]);
-
-
         }
-
-
     };
 
     useEffect(() => {
         window.addEventListener('keyup', handleUserKeyUp);
         return  () => window.removeEventListener('keyup', handleUserKeyUp);
     });
-
 
     return (
         <div>
