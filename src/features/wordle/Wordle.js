@@ -10,10 +10,11 @@ const Wordle = () => {
     };
     const LIMIT_COUNT = 5;
 
-
     const [currentGuess, setCurrentGuess] = useState([]);
     const [isEndGame, setIsEndGame] = useState(false);
-    const [history, setHistory] = useState([]);
+    const [history, setHistory] = useState(Array(LIMIT_COUNT).fill({
+        guessAnswer: []
+    }));
     const [guessCount, setGuessCount] = useState(0);
 
     const handleUserKeyUp = (event) => {
@@ -69,16 +70,22 @@ const Wordle = () => {
             setGuessCount(currentGuessCount);
 
             // 寫紀錄
-            setHistory([...history, {
-                guessAnswer: roundGuess,
-            }]);
+            setHistory(history.map((item, index) => {
+                if(index === guessCount) {
+                    return {
+                        guessAnswer: roundGuess
+                    }
+                }
+                return item
+            }));
         }
     };
 
     useEffect(() => {
         window.addEventListener('keyup', handleUserKeyUp);
         return  () => window.removeEventListener('keyup', handleUserKeyUp);
-    });
+    }, [currentGuess]);
+
 
     return (
         <div>
