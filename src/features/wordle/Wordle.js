@@ -69,9 +69,9 @@ const Wordle = () => {
 
             setGuessCount(currentGuessCount);
 
-            // 寫紀錄
+            // 覆寫猜過的紀錄
             setHistory(history.map((item, index) => {
-                if(index === guessCount) {
+                if(index === (currentGuessCount-1)) {
                     return {
                         guessAnswer: roundGuess
                     }
