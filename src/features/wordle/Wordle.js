@@ -46,7 +46,7 @@ const Wordle = () => {
             });
 
             // 判斷輸贏
-            if(roundGuess.find((obj) => (obj.color === 'gray' || obj.color === 'yellow'))) {
+            if(roundGuess.find((obj) => (obj.color === COLOR.GRAY || obj.color === COLOR.YELLOW))) {
                 setIsWinner(false);
                 setCurrentGuess([]);
             } else {
